@@ -1,0 +1,37 @@
+version: "3.3"
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=root
+    ports:
+      - 3307:3307
+    volumes:
+      - ./dump/:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - 8001:80
+    links:
+      - db:mysqldb  
+  app:
+    depends_on:
+      - db
+    build: ./
+    image: api_midland/server 
+    ports:
+      - 8005:8080
+  php-apache:
+    image: apache443
+    links:
+      - db:mysqldb
+    volumes: 
+      - ./www/:/var/www/html
+    ports:
+      - 8000:80
+
+  
